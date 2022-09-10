@@ -6,6 +6,9 @@ const UserSchema = new Schema({
   name: { type: String, required: true },
   picURL: { type: String, required: true },
   creationDate: { type: Date, default: Date.now },
+  currentlyMatched: { type: Boolean, default: false },
+  preferences: { type: Schema.Types.ObjectId, ref: "Preferences" },
+  prefsCompleted: { type: Boolean, default: false },
 });
 
 //Export model

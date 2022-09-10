@@ -13,4 +13,10 @@ const PreferencesSchema = new Schema({
     enum: ["Low", "Medium", "High"],
     required: true,
   },
+  lastMeal: { type: String, required: true },
+  animal: { type: String, required: true },
+  languages: { type: [String], required: true },
 });
+
+//Export model
+module.exports = mongoose.model("Preferences", PreferencesSchema);
