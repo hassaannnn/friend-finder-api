@@ -13,7 +13,10 @@ router.post("/login", async (req, res) => {
   const allowedDomains = ["ualberta", "gmail"];
 
   const { token } = req.body;
-
+  if (token == null) {
+    res.status(401).send("No token provided");
+    return;
+  }
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
