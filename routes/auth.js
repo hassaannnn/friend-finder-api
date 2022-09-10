@@ -17,30 +17,24 @@ router.post("/login", async (req, res) => {
     res.status(401).send("No token provided");
     return;
   }
+
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.CLIENT_ID,
     });
+
     const { name, email, picture } = ticket.getPayload();
+
     let emailDomain = email.split("@")[1].split(".")[0];
     if (!allowedDomains.includes(emailDomain)) {
       res.status(401).send("Unauthorized");
     }
+    console.log(name, email, picture);
 
-    let jwttoken = await createUser(
-      req,
-      res,
-      email,
-      name,
-      picture,
-      function (tok, points) {
-        res.cookie("token", tok, { httpOnly: true });
-        let jtoken = tok;
-        loginValid = true;
-        res.status(200).json({ name, email, picture, jtoken, loginValid });
-      }
-    );
+    let jwtToken = await createUsers(email, name, picture);
+    loginValid = true;
+    res.status(200).json({ name, email, picture, jwtToken, loginValid });
   } catch (e) {
     console.log(e, " is e");
     res.status(500).send({
@@ -49,7 +43,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-const createUser = async (req, res, email, name, picture, callback) => {
+const createUsers = async (email, name, picture) => {
   let user = await User.findOne({ email: email });
   if (!user) {
     user = new User({
@@ -59,10 +53,10 @@ const createUser = async (req, res, email, name, picture, callback) => {
     });
     await user.save();
   }
-  let jtoken = jwt.sign(user, process.env.JWT_SECRET, {
+  let jtoken = jwt.sign({ email, name, picture }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
-  callback(jtoken);
+  return jtoken;
 };
 
 module.exports = router;
