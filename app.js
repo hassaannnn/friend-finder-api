@@ -7,7 +7,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const dotenv = require("dotenv");
 const { OAuth2Client } = require("google-auth-library");
 const jwt = require("jsonwebtoken");
-
+const cors = require("cors");
 dotenv.config();
 
 var mongoose = require("mongoose");
@@ -28,6 +28,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);

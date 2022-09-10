@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const UserSchema = new Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   picURL: { type: String, required: true },
@@ -9,4 +9,4 @@ const userSchema = new Schema({
 });
 
 //Export model
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model("User", UserSchema);
