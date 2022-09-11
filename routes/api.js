@@ -62,15 +62,14 @@ function createUserPreferences(req) {
   let p = new Preferences({
     user: req.user,
     faculty: req.body.faculty,
+    age: req.body.age,
     year: req.body.year,
-    major: req.body.major,
-    minor: req.body.minor,
     fitness: req.body.fitness,
     sociability: req.body.sociability,
     lastMeal: req.body.lastMeal,
     animal: req.body.animal,
-    languages: req.body.languages,
-    fitness: req.body.fitness,
+    languages: req.body.languages
+    
   });
   try {
     p.save();
