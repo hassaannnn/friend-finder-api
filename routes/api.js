@@ -15,7 +15,7 @@ router.get("/test", authenticateToken, function (req, res, next) {
 });
 
 router.post("/createUserPreferences", authenticateToken, function (req, res) {
-  console.log("runnign")
+  console.log("runnign");
   if (createUserPreferences(req)) {
     res.status(200).send("success");
   } else {
@@ -24,8 +24,11 @@ router.post("/createUserPreferences", authenticateToken, function (req, res) {
 });
 
 router.post("/createMatch", authenticateToken, function (req, res) {
-  if (createMatch(req)) {
-    res.status(200).json({message:"Success!", valid: true });
+  results = createMatch(req);
+  if (results[0]) {
+    res
+      .status(200)
+      .json({ message: "Success!", valid: true, data: results[1] });
   } else {
     res.status(200).json({ message: "No Matches Found", valid: false });
   }
@@ -70,8 +73,7 @@ function createUserPreferences(req) {
     sociability: req.body.sociability,
     lastMeal: req.body.lastMeal,
     animal: req.body.animal,
-    languages: req.body.languages
-    
+    languages: req.body.languages,
   });
   try {
     let foundUser = req.user;
@@ -90,7 +92,7 @@ function createUserPreferences(req) {
 
 async function createMatch(req) {
   let foundMatch = await findMatches(req);
-  if (foundMatch == null){
+  if (foundMatch == null) {
     return false;
   }
   console.log(foundMatch);
@@ -104,11 +106,16 @@ async function createMatch(req) {
     req.user.save();
     foundMatch.currentlyMatched = true;
     foundMatch.save();
+    const data = {
+      matchName: foundMatch.name,
+      matchPic: foundMatch.picURL,
+      meetingLocation: m.meetingPlace,
+    };
     console.log("done");
   } catch {
     return false;
   }
-  return true;
+  return [true, data];
 }
 async function findMatches(req) {
   let foundUser = req.user;
@@ -118,7 +125,7 @@ async function findMatches(req) {
     prefsCompleted: true,
     _id: { $ne: foundUser._id },
   });
-  if(possibleMatches.length == 0){
+  if (possibleMatches.length == 0) {
     return null;
   }
   //Implement logic to find matches, randomize for now
@@ -131,6 +138,5 @@ async function findMatches(req) {
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
-
 
 module.exports = router;
