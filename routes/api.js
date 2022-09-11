@@ -74,8 +74,11 @@ function createUserPreferences(req) {
     
   });
   try {
-    p.save();
     let foundUser = req.user;
+    if (foundUser.prefsCompleted == true) {
+      return true;
+    }
+    p.save();
     foundUser.preferences = p;
     foundUser.prefsCompleted = true;
     foundUser.save();
