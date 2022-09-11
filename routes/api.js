@@ -23,12 +23,11 @@ router.post("/createUserPreferences", authenticateToken, function (req, res) {
   }
 });
 
-router.post("/createMatch", authenticateToken, function (req, res) {
-  results = createMatch(req);
-  if (results[0]) {
-    res
-      .status(200)
-      .json({ message: "Success!", valid: true, data: results[1] });
+router.post("/createMatch", authenticateToken, async function (req, res) {
+  results = await createMatch(req);
+  console.log(results + " is results");
+  if (results != false) {
+    res.status(200).json({ message: "Success!", valid: true, data: results });
   } else {
     res.status(200).json({ message: "No Matches Found", valid: false });
   }
@@ -92,46 +91,49 @@ function createUserPreferences(req) {
 
 async function createMatch(req) {
   let foundMatch = await findMatches(req);
+  //console.log(foundMatch + ": is foundMatch");
   if (foundMatch == null) {
     return false;
   }
-  console.log(foundMatch);
+
   let m = new Matches({
     user1: req.user,
     user2: foundMatch,
   });
   try {
     m.save();
-    req.user.currentlyMatched = true;
-    req.user.save();
-    foundMatch.currentlyMatched = true;
+    //req.user.currentlyMatched = true;
+    req.user.save(); //unmdo these
+    //foundMatch.currentlyMatched = true;
     foundMatch.save();
     const data = {
       matchName: foundMatch.name,
       matchPic: foundMatch.picURL,
       meetingLocation: m.meetingPlace,
     };
-    console.log("done");
+
+    return data;
   } catch {
     return false;
   }
-  return [true, data];
 }
 async function findMatches(req) {
   let foundUser = req.user;
   let foundPreferences = foundUser.preferences;
+
   let possibleMatches = await User.find({
     currentlyMatched: false,
     prefsCompleted: true,
     _id: { $ne: foundUser._id },
   });
+  //console.log(possibleMatches);
   if (possibleMatches.length == 0) {
     return null;
   }
   //Implement logic to find matches, randomize for now
   getRandomInt(possibleMatches.length);
   let match = possibleMatches[getRandomInt(possibleMatches.length)];
-
+  console.log("lenght is " + possibleMatches.length);
   return match;
 }
 
