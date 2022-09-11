@@ -24,9 +24,9 @@ router.post("/createUserPreferences", authenticateToken, function (req, res) {
 
 router.post("/createMatch", authenticateToken, function (req, res) {
   if (createMatch(req)) {
-    res.status(200).send("success");
+    res.status(200).json({message:"Success!", valid: true });
   } else {
-    res.status(500).send("failure");
+    res.status(200).json({ message: "No Matches Found", valid: false });
   }
 });
 function authenticateToken(req, res, next) {
@@ -85,6 +85,9 @@ function createUserPreferences(req) {
 
 async function createMatch(req) {
   let foundMatch = await findMatches(req);
+  if (foundMatch == null){
+    return false;
+  }
   console.log(foundMatch);
   let m = new Matches({
     user1: req.user,
@@ -110,6 +113,9 @@ async function findMatches(req) {
     prefsCompleted: true,
     _id: { $ne: foundUser._id },
   });
+  if(possibleMatches.length == 0){
+    return null;
+  }
   //Implement logic to find matches, randomize for now
   getRandomInt(possibleMatches.length);
   let match = possibleMatches[getRandomInt(possibleMatches.length)];
