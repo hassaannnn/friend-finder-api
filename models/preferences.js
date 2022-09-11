@@ -6,7 +6,7 @@ const PreferencesSchema = new Schema({
   faculty: { type: String, required: true },
   year: { type: String, required: true },
   age: { type: String, required: true },
-  fitness: { type: Boolean, required: true },
+  fitness: { type: String, required: true },
   sociability: {
     type: String,
     enum: ["Low", "Medium", "High"],

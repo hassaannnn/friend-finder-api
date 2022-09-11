@@ -15,6 +15,7 @@ router.get("/test", authenticateToken, function (req, res, next) {
 });
 
 router.post("/createUserPreferences", authenticateToken, function (req, res) {
+  console.log("runnign")
   if (createUserPreferences(req)) {
     res.status(200).send("success");
   } else {
@@ -32,6 +33,7 @@ router.post("/createMatch", authenticateToken, function (req, res) {
 function authenticateToken(req, res, next) {
   const authHeader = req.headers["authorization"];
   const tokenOnly = authHeader && authHeader.split(" ")[1];
+  //console.log(req.headers)
   try {
     //const tokenOnly = req.cookies.token;
     if (tokenOnly == null) {
@@ -126,5 +128,6 @@ async function findMatches(req) {
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
+
 
 module.exports = router;
